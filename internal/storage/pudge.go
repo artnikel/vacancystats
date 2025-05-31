@@ -1,4 +1,4 @@
-package repository
+package storage
 
 import (
 	"context"
@@ -30,3 +30,22 @@ func (storage *Pudge) Create(ctx context.Context, vacancy *model.Vacancy) error 
 	return storage.pool.Set(vacancy.VacancyID, vacancy)
 }
 
+func (storage *Pudge) GetAll(ctx context.Context) ([]model.Vacancy, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, fmt.Errorf("error in pudge GetAll: %v", err)
+	}
+	keys, err := storage.pool.Keys(nil, 0, 0, true)
+	if err != nil {
+		return nil, fmt.Errorf("error in pudge Keys: %v", err)
+	}
+	var vacancies []model.Vacancy
+	for _, key := range keys {
+		var vacancy model.Vacancy
+		err := storage.pool.Get(key, &vacancy)
+		if err != nil {
+			continue
+		}
+		vacancies = append(vacancies, vacancy)
+	}
+	return vacancies, nil
+}
