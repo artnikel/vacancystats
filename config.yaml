@@ -1,0 +1,20 @@
+dbfolder:
+  dbpath: "db/stats"
+
+logging:
+  path: "logs"
+
+resource:
+  resource_list:
+    - "rabota.by"
+    - "headhunter.ru"
+    - "linkedin.com"
+    - "habr.com"
+
+result:
+  result_list:
+    - "Waiting"
+    - "Interview"
+    - "Rejection"
+    - "Inviting"
+
