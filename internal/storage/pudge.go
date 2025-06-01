@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/artnikel/vacancystats/internal/model"
+	"github.com/google/uuid"
 	"github.com/recoilme/pudge"
 )
 
@@ -48,4 +49,11 @@ func (storage *Pudge) GetAll(ctx context.Context) ([]model.Vacancy, error) {
 		vacancies = append(vacancies, vacancy)
 	}
 	return vacancies, nil
+}
+
+func (storage *Pudge) Delete(ctx context.Context, id uuid.UUID) error {
+	if err := ctx.Err(); err != nil {
+		return fmt.Errorf("error in pudge Delete: %v", err)
+	}
+	return storage.pool.Delete(id)
 }
