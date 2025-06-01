@@ -14,13 +14,15 @@ import (
 )
 
 func clearConsole() {
-	cmd := exec.Command("bash", "-c", "clear")
+	cmd := exec.Command("bash", "-c", "clear") // linux
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err := cmd.Run()
 	arch := false
 	if err != nil {
-		cmd = exec.Command("cmd", "/c", "cls")
+		cmd = exec.Command("cmd", "/c", "cls") // windows
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
 		arch = true
 	}
 	if arch {
@@ -52,7 +54,7 @@ func main() {
 	defer cancel()
 
 	for {
-		fmt.Print("\nselect operation:\n 1 - add new vacancy request\n 2 - get stats\n")
+		fmt.Print("\nselect operation:\n 1 - add new vacancy response\n 2 - get stats\n 3 - delete response\n")
 		var operation int
 		fmt.Fscan(os.Stdin, &operation)
 
@@ -63,6 +65,9 @@ func main() {
 		case 2:
 			clearConsole()
 			route.GetStats(ctx)
+		case 3: 
+			clearConsole()
+			route.Delete(ctx)
 		default:
 			clearConsole()
 			fmt.Printf("\ninvalid operation:%d\n", operation)

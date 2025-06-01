@@ -16,6 +16,7 @@ import (
 type Storage interface {
 	Create(ctx context.Context, vacancy *model.Vacancy) error
 	GetAll(ctx context.Context) ([]model.Vacancy, error)
+	Delete(ctx context.Context, id uuid.UUID) error
 }
 
 type Routes struct {
@@ -62,13 +63,29 @@ func (r *Routes) GetStats(ctx context.Context) {
 	if err != nil {
 		r.Logger.Error.Printf("%v", err)
 	}
-	fmt.Println("resource / company / result / time")
-	fmt.Println("----------------------------------")
+	fmt.Println("id  /  resource  /  company  /  result  /  time")
+	fmt.Println("-----------------------------------------------")
 	for _, vacancy := range vacancies {
-		fmt.Printf("%s / %s / %s / %s\n",
+		fmt.Printf("%s / %s / %s / %s / %s\n",
+			vacancy.VacancyID.String(),
 			vacancy.Resource,
 			vacancy.Company,
 			vacancy.Result,
 			vacancy.ResponseTime.Format(time.RFC1123))
 	}
+}
+
+func (r *Routes) Delete(ctx context.Context) {
+	var idText string
+	fmt.Println("\ninput id:")
+	fmt.Fscan(os.Stdin, &idText)
+	id, err := uuid.Parse(idText)
+	if err != nil {
+		r.Logger.Error.Printf("%v", err)
+	}
+	err = r.storage.Delete(ctx, id)
+	if err != nil {
+		r.Logger.Error.Printf("%v", err)
+	}
+	fmt.Println("vacancy deleted")
 }
