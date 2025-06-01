@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/artnikel/vacancystats/internal/config"
@@ -27,25 +28,33 @@ func NewRoutes(storage Storage, logger *logging.Logger, cfg *config.Config) *Rou
 	return &Routes{storage: storage, Logger: logger, Config: cfg}
 }
 
+func listToText(list []string) (text string) {
+	for index, value := range list {
+		text += strconv.Itoa(index+1) + ") " + value + "\n"
+	}
+	return text
+}
+
 func (r *Routes) Create(ctx context.Context) {
 	newVacancy := &model.Vacancy{
 		VacancyID:    uuid.New(),
 		ResponseTime: time.Now(),
 	}
 	var resourceNumber int
-	fmt.Println("\nselect resource:", r.Config.Resource.ResourceList)
+	fmt.Printf("\nselect resource:\n%s", listToText(r.Config.Resource.ResourceList))
 	fmt.Fscan(os.Stdin, &resourceNumber)
-	newVacancy.Resource = r.Config.Resource.ResourceList[resourceNumber]
+	newVacancy.Resource = r.Config.Resource.ResourceList[resourceNumber-1]
 	fmt.Println("\ncompany name:")
 	fmt.Fscan(os.Stdin, &newVacancy.Company)
 	var resultNumber int
-	fmt.Println("\nselect result:", r.Config.Result.ResultList)
+	fmt.Printf("\nselect result:\n%s", listToText(r.Config.Result.ResultList))
 	fmt.Fscan(os.Stdin, &resultNumber)
-	newVacancy.Result = r.Config.Result.ResultList[resultNumber]
+	newVacancy.Result = r.Config.Result.ResultList[resultNumber-1]
 	err := r.storage.Create(ctx, newVacancy)
 	if err != nil {
 		r.Logger.Error.Printf("%v", err)
 	}
+	fmt.Println("vacancy info added")
 }
 
 func (r *Routes) GetStats(ctx context.Context) {
@@ -53,8 +62,13 @@ func (r *Routes) GetStats(ctx context.Context) {
 	if err != nil {
 		r.Logger.Error.Printf("%v", err)
 	}
+	fmt.Println("resource / company / result / time")
+	fmt.Println("----------------------------------")
 	for _, vacancy := range vacancies {
-		fmt.Println(vacancy)
+		fmt.Printf("%s / %s / %s / %s\n",
+			vacancy.Resource,
+			vacancy.Company,
+			vacancy.Result,
+			vacancy.ResponseTime.Format(time.RFC1123))
 	}
-
 }
