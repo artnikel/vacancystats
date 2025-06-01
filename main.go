@@ -5,12 +5,31 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
 
 	"github.com/artnikel/vacancystats/internal/config"
 	"github.com/artnikel/vacancystats/internal/logging"
 	"github.com/artnikel/vacancystats/internal/routes"
 	"github.com/artnikel/vacancystats/internal/storage"
 )
+
+func clearConsole() {
+	cmd := exec.Command("bash", "-c", "clear")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err := cmd.Run()
+	arch := false
+	if err != nil {
+		cmd = exec.Command("cmd", "/c", "cls")
+		arch = true
+	}
+	if arch {
+		err = cmd.Run()
+		if err != nil {
+			fmt.Printf("\nclear console error: %v\n", err)
+		}
+	}
+}
 
 func main() {
 	cfg, err := config.LoadConfig("config.yaml")
@@ -33,17 +52,20 @@ func main() {
 	defer cancel()
 
 	for {
-		fmt.Print("Select operation:\n 1 - add new vacancy request\n 2 - get stats\n")
+		fmt.Print("\nselect operation:\n 1 - add new vacancy request\n 2 - get stats\n")
 		var operation int
 		fmt.Fscan(os.Stdin, &operation)
-		
+
 		switch operation {
 		case 1:
+			clearConsole()
 			route.Create(ctx)
 		case 2:
+			clearConsole()
 			route.GetStats(ctx)
 		default:
-			fmt.Printf("Invalid operation:%d\n", operation)
+			clearConsole()
+			fmt.Printf("\ninvalid operation:%d\n", operation)
 		}
 	}
 }
