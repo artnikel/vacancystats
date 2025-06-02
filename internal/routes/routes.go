@@ -8,8 +8,10 @@ import (
 	"time"
 
 	"github.com/artnikel/vacancystats/internal/config"
+	"github.com/artnikel/vacancystats/internal/constants"
 	"github.com/artnikel/vacancystats/internal/logging"
 	"github.com/artnikel/vacancystats/internal/model"
+	"github.com/artnikel/vacancystats/internal/utils"
 	"github.com/google/uuid"
 )
 
@@ -37,21 +39,32 @@ func listToText(list []string) (text string) {
 	return text
 }
 
+func checkCorrectInput(selection string, list []string) int {
+	number := 0
+	firstInp := false
+	for number < 1 || number > len(list) {
+		if firstInp {
+			utils.ClearConsole()
+			fmt.Printf("\nincorrect input:\n%d", number)
+		}
+		fmt.Printf("\nselect %s:\n%s", selection, listToText(list))
+		fmt.Fscan(os.Stdin, &number)
+		firstInp = true
+	}
+	return number
+}
+
 func (r *Routes) Create(ctx context.Context) {
 	newVacancy := &model.Vacancy{
 		VacancyID:    uuid.New(),
 		ResponseTime: time.Now(),
 	}
-	var resourceNumber int
-	fmt.Printf("\nselect resource:\n%s", listToText(r.Config.Resource.ResourceList))
-	fmt.Fscan(os.Stdin, &resourceNumber)
-	newVacancy.Resource = r.Config.Resource.ResourceList[resourceNumber-1]
+	number := checkCorrectInput(constants.ResourceTypeInput, r.Config.Resource.ResourceList)
+	newVacancy.Resource = r.Config.Resource.ResourceList[number-1]
 	fmt.Println("\ncompany name:")
 	fmt.Fscan(os.Stdin, &newVacancy.Company)
-	var statusNumber int
-	fmt.Printf("\nselect status:\n%s", listToText(r.Config.Status.StatusList))
-	fmt.Fscan(os.Stdin, &statusNumber)
-	newVacancy.Status = r.Config.Status.StatusList[statusNumber-1]
+	number = checkCorrectInput(constants.StatusTypeInput, r.Config.Status.StatusList)
+	newVacancy.Status = r.Config.Status.StatusList[number-1]
 	err := r.storage.Create(ctx, newVacancy)
 	if err != nil {
 		r.Logger.Error.Printf("%v", err)
@@ -87,8 +100,10 @@ func (r *Routes) Delete(ctx context.Context) {
 	err = r.storage.Delete(ctx, id)
 	if err != nil {
 		r.Logger.Error.Printf("%v", err)
+		fmt.Printf("%v", err)
+	} else {
+		fmt.Println("vacancy deleted")
 	}
-	fmt.Println("vacancy deleted")
 }
 
 func (r *Routes) UpdateStatus(ctx context.Context) {
@@ -108,6 +123,8 @@ func (r *Routes) UpdateStatus(ctx context.Context) {
 	err = r.storage.UpdateStatus(ctx, &updVacancy)
 	if err != nil {
 		r.Logger.Error.Printf("%v", err)
+		fmt.Printf("%v", err)
+	} else {
+		fmt.Println("vacancy status updated")
 	}
-	fmt.Println("vacancy status updated")
 }
