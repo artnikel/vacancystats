@@ -57,3 +57,16 @@ func (storage *Pudge) Delete(ctx context.Context, id uuid.UUID) error {
 	}
 	return storage.pool.Delete(id)
 }
+
+func (storage *Pudge) UpdateStatus(ctx context.Context, vacancy *model.Vacancy) error {
+	if err := ctx.Err(); err != nil {
+		return fmt.Errorf("error in pudge UpdateStatus: %v", err)
+	}
+	var updVacancy model.Vacancy
+	err := storage.pool.Get(vacancy.VacancyID, &updVacancy)
+	if err != nil {
+		return  fmt.Errorf("error in pudge Get: %v", err)
+	}
+	updVacancy.Status = vacancy.Status
+	return storage.pool.Set(vacancy.VacancyID, updVacancy)
+}

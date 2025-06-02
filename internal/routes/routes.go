@@ -17,6 +17,7 @@ type Storage interface {
 	Create(ctx context.Context, vacancy *model.Vacancy) error
 	GetAll(ctx context.Context) ([]model.Vacancy, error)
 	Delete(ctx context.Context, id uuid.UUID) error
+	UpdateStatus(ctx context.Context, vacancy *model.Vacancy) error
 }
 
 type Routes struct {
@@ -47,10 +48,10 @@ func (r *Routes) Create(ctx context.Context) {
 	newVacancy.Resource = r.Config.Resource.ResourceList[resourceNumber-1]
 	fmt.Println("\ncompany name:")
 	fmt.Fscan(os.Stdin, &newVacancy.Company)
-	var resultNumber int
-	fmt.Printf("\nselect result:\n%s", listToText(r.Config.Result.ResultList))
-	fmt.Fscan(os.Stdin, &resultNumber)
-	newVacancy.Result = r.Config.Result.ResultList[resultNumber-1]
+	var statusNumber int
+	fmt.Printf("\nselect status:\n%s", listToText(r.Config.Status.StatusList))
+	fmt.Fscan(os.Stdin, &statusNumber)
+	newVacancy.Status = r.Config.Status.StatusList[statusNumber-1]
 	err := r.storage.Create(ctx, newVacancy)
 	if err != nil {
 		r.Logger.Error.Printf("%v", err)
@@ -63,14 +64,14 @@ func (r *Routes) GetStats(ctx context.Context) {
 	if err != nil {
 		r.Logger.Error.Printf("%v", err)
 	}
-	fmt.Println("id  /  resource  /  company  /  result  /  time")
+	fmt.Println("id  /  resource  /  company  /  status  /  time")
 	fmt.Println("-----------------------------------------------")
 	for _, vacancy := range vacancies {
 		fmt.Printf("%s / %s / %s / %s / %s\n",
 			vacancy.VacancyID.String(),
 			vacancy.Resource,
 			vacancy.Company,
-			vacancy.Result,
+			vacancy.Status,
 			vacancy.ResponseTime.Format(time.RFC1123))
 	}
 }
@@ -88,4 +89,25 @@ func (r *Routes) Delete(ctx context.Context) {
 		r.Logger.Error.Printf("%v", err)
 	}
 	fmt.Println("vacancy deleted")
+}
+
+func (r *Routes) UpdateStatus(ctx context.Context) {
+	var updVacancy model.Vacancy
+	var idText string
+	fmt.Println("\ninput id:")
+	fmt.Fscan(os.Stdin, &idText)
+	id, err := uuid.Parse(idText)
+	if err != nil {
+		r.Logger.Error.Printf("%v", err)
+	}
+	updVacancy.VacancyID = id
+	var statusNumber int
+	fmt.Printf("\nselect status:\n%s", listToText(r.Config.Status.StatusList))
+	fmt.Fscan(os.Stdin, &statusNumber)
+	updVacancy.Status = r.Config.Status.StatusList[statusNumber-1]
+	err = r.storage.UpdateStatus(ctx, &updVacancy)
+	if err != nil {
+		r.Logger.Error.Printf("%v", err)
+	}
+	fmt.Println("vacancy status updated")
 }

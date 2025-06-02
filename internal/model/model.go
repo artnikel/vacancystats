@@ -10,6 +10,6 @@ type Vacancy struct {
 	VacancyID    uuid.UUID
 	Resource     string
 	Company      string
-	Result       string
+	Status       string
 	ResponseTime time.Time
 }

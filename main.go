@@ -54,7 +54,7 @@ func main() {
 	defer cancel()
 
 	for {
-		fmt.Print("\nselect operation:\n 1 - add new vacancy response\n 2 - get stats\n 3 - delete response\n")
+		fmt.Print("\nselect operation:\n 1 - add new vacancy response\n 2 - get stats\n 3 - delete response\n 4 - update status\n")
 		var operation int
 		fmt.Fscan(os.Stdin, &operation)
 
@@ -68,6 +68,9 @@ func main() {
 		case 3: 
 			clearConsole()
 			route.Delete(ctx)
+		case 4:
+			clearConsole()
+			route.UpdateStatus(ctx)
 		default:
 			clearConsole()
 			fmt.Printf("\ninvalid operation:%d\n", operation)

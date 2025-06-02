@@ -11,8 +11,8 @@ resource:
     - "linkedin.com"
     - "habr.com"
 
-result:
-  result_list:
+status:
+  status_list:
     - "Waiting"
     - "Interview"
     - "Rejection"

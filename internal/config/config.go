@@ -18,15 +18,15 @@ type ResourceConfig struct {
 	ResourceList []string `yaml:"resource_list"`
 }
 
-type ResultConfig struct {
-	ResultList []string `yaml:"result_list"`
+type StatusConfig struct {
+	StatusList []string `yaml:"status_list"`
 }
 
 type Config struct {
 	DBFolder DBFolderConfig `yaml:"dbfolder"`
 	Logging  LoggingConfig  `yaml:"logging"`
 	Resource ResourceConfig `yaml:"resource"`
-	Result   ResultConfig   `yaml:"result"`
+	Status   StatusConfig   `yaml:"status"`
 }
 
 func LoadConfig(path string) (*Config, error) {
