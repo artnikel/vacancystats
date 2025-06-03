@@ -2,10 +2,12 @@
 package routes
 
 import (
+	"bufio"
 	"context"
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/artnikel/vacancystats/internal/config"
@@ -71,10 +73,13 @@ func (r *Routes) Create(ctx context.Context) {
 	}
 	number := checkCorrectInput(constants.ResourceTypeInput, r.Config.Resource.ResourceList)
 	newVacancy.Resource = r.Config.Resource.ResourceList[number-1]
+	reader := bufio.NewReader(os.Stdin)
 	fmt.Println("\ncompany name:")
-	_, err := fmt.Fscan(os.Stdin, &newVacancy.Company)
+	input, err := reader.ReadString('\n')
 	if err != nil {
 		fmt.Printf("\ninput error:\n%v", err)
+	} else {
+		newVacancy.Company = strings.TrimSpace(input)
 	}
 	number = checkCorrectInput(constants.StatusTypeInput, r.Config.Status.StatusList)
 	newVacancy.Status = r.Config.Status.StatusList[number-1]

@@ -13,8 +13,9 @@ resource:
 
 status:
   status_list:
-    - "Waiting"
-    - "Interview"
-    - "Rejection"
-    - "Inviting"
+    - "waiting"
+    - "interview"
+    - "rejection"
+    - "inviting"
+    - "viewed"
 
