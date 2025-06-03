@@ -1,3 +1,4 @@
+// Package logging provides a simple logging setup for informational and error messages
 package logging
 
 import (
@@ -8,11 +9,13 @@ import (
 	"github.com/artnikel/vacancystats/internal/constants"
 )
 
+// Logger holds separate loggers for informational and error messages
 type Logger struct {
 	Info  *log.Logger
 	Error *log.Logger
 }
 
+// NewLogger sets up the logging system
 func NewLogger(dir string) (*Logger, error) {
 	err := os.MkdirAll(dir, constants.DirPerm)
 	if err != nil {
@@ -20,6 +23,7 @@ func NewLogger(dir string) (*Logger, error) {
 	}
 
 	logPath := filepath.Join(dir, "app.log")
+	// #nosec G304 -- logPath is controlled and not user-influenced
 	logFile, err := os.OpenFile(logPath, os.O_CREATE|os.O_APPEND|os.O_WRONLY, constants.FilePerm)
 	if err != nil {
 		return nil, err

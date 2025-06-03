@@ -1,3 +1,4 @@
+// Package utils provides utility functions for console interaction
 package utils
 
 import (
@@ -6,6 +7,7 @@ import (
 	"os/exec"
 )
 
+// ClearConsole clears the terminal screen on Linux and Windows systems
 func ClearConsole() {
 	cmd := exec.Command("bash", "-c", "clear") // linux
 	cmd.Stdout = os.Stdout

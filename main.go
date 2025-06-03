@@ -1,3 +1,4 @@
+// Package main is an entry point to application
 package main
 
 import (
@@ -14,6 +15,13 @@ import (
 	"github.com/artnikel/vacancystats/internal/storage"
 	"github.com/artnikel/vacancystats/internal/utils"
 	"github.com/recoilme/pudge"
+)
+
+const (
+	createOption = iota + 1
+	getStatsOption
+	deleteOption
+	updateStatusOption
 )
 
 func main() {
@@ -52,23 +60,25 @@ func main() {
 	for {
 		fmt.Print("\nselect operation:\n 1 - add new vacancy response\n 2 - get stats\n 3 - delete response\n 4 - update status\n")
 		var operation int
-		fmt.Fscan(os.Stdin, &operation)
-
+		_, err = fmt.Fscan(os.Stdin, &operation)
+		if err != nil {
+			fmt.Printf("\ninput error:\n%v", err)
+		}
 		select {
 		case <-ctx.Done():
 			return
 		default:
 			switch operation {
-			case 1:
+			case createOption:
 				utils.ClearConsole()
 				route.Create(ctx)
-			case 2:
+			case getStatsOption:
 				utils.ClearConsole()
 				route.GetStats(ctx)
-			case 3:
+			case deleteOption:
 				utils.ClearConsole()
 				route.Delete(ctx)
-			case 4:
+			case updateStatusOption:
 				utils.ClearConsole()
 				route.UpdateStatus(ctx)
 			default:
