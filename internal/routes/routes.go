@@ -85,8 +85,8 @@ func (r *Routes) Create(ctx context.Context) {
 	fmt.Println("vacancy info added")
 }
 
-// GetStats retrieves and prints all vacancy records
-func (r *Routes) GetStats(ctx context.Context) {
+// GetResponses retrieves and prints all vacancy records
+func (r *Routes) GetResponses(ctx context.Context) {
 	vacancies, err := r.storage.GetAll(ctx)
 	if err != nil {
 		r.Logger.Error.Printf("%v", err)
@@ -100,6 +100,23 @@ func (r *Routes) GetStats(ctx context.Context) {
 			vacancy.Company,
 			vacancy.Status,
 			vacancy.ResponseTime.Format(time.RFC1123))
+	}
+}
+
+// GetStats calculates response statistics in percentages
+func (r *Routes) GetStats(ctx context.Context) {
+	vacancies, err := r.storage.GetAll(ctx)
+	if err != nil {
+		r.Logger.Error.Printf("%v", err)
+	}
+	countMap := make(map[string]int, len(r.Config.Status.StatusList))
+	for _, vacancy := range vacancies {
+		countMap[vacancy.Status]++
+	}
+	totalCount := len(vacancies)
+	fmt.Printf("\ntotal count of responses: %d\n", totalCount)
+	for status, count := range countMap {
+		fmt.Printf("%s - %.2f%% \n", status, float64(count)/float64(totalCount)*100) //nolint:mnd // percentage calculation
 	}
 }
 

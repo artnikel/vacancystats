@@ -19,6 +19,7 @@ import (
 
 const (
 	createOption = iota + 1
+	getResponsesOption
 	getStatsOption
 	deleteOption
 	updateStatusOption
@@ -58,7 +59,7 @@ func main() {
 	}()
 
 	for {
-		fmt.Print("\nselect operation:\n 1 - add new vacancy response\n 2 - get stats\n 3 - delete response\n 4 - update status\n")
+		fmt.Print("\nselect operation:\n 1 - add new vacancy response\n 2 - get responses\n 3 - get stats\n 4 - delete response\n 5 - update status\n")
 		var operation int
 		_, err = fmt.Fscan(os.Stdin, &operation)
 		if err != nil {
@@ -72,6 +73,9 @@ func main() {
 			case createOption:
 				utils.ClearConsole()
 				route.Create(ctx)
+			case getResponsesOption:
+				utils.ClearConsole()
+				route.GetResponses(ctx)
 			case getStatsOption:
 				utils.ClearConsole()
 				route.GetStats(ctx)
